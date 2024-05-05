@@ -14,8 +14,10 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
-import top.liwanyu.project_server.exception.GlobalException;
-import top.liwanyu.project_server.model.User;
+import top.liwanyu.project_server.aspect.GlobalException;
+import top.liwanyu.project_server.constant.enums.ResultStatus;
+import top.liwanyu.project_server.model.dto.UserDto;
+import top.liwanyu.project_server.model.entity.UserEntity;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -38,7 +40,7 @@ public class JwtUtils {
      * @param userId
      * @return
      */
-    public static String token(User user) {
+    public static String token(UserEntity user) {
 
         String token = "";
         try {
@@ -55,17 +57,19 @@ public class JwtUtils {
                     .withHeader(header)
                     .withClaim("id", user.getId())
                     .withClaim("userName", user.getUserName())
-                    .withClaim("passWord", user.getPassWord())
                     .withClaim("nickName", user.getNickName())
                     .withClaim("phone", user.getPhone())
                     .withClaim("email", user.getEmail())
                     .withClaim("avatar", user.getAvatar())
                     .withClaim("addr", user.getAddr())
+                    .withClaim("createTime", user.getCreateTime())
+                    .withClaim("updateTime", user.getUpdateTime())
+                    .withClaim("userRole", user.getUserRole())
+                    .withClaim("userPermission", user.getUserPermission())
                     .withExpiresAt(date)
                     .sign(algorithm);
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            throw e;
         }
         return token;
     }
@@ -108,28 +112,30 @@ public class JwtUtils {
             return diffInMinutes<10;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new GlobalException(MessageCode.INVALID_TOKEN);
+            throw new GlobalException(ResultStatus.INVALID_TOKEN);
         }
 
     }
 
 
-    public static User parse(String token) {
+    public static UserDto parse(String token) {
         DecodedJWT decodedJWT = JWT.decode(token);
 
         Map<String, Claim> claims = decodedJWT.getClaims();
        
 
-        User user = new User();
+        UserDto user = new UserDto();
         user.setId(claims.get("id").asInt());
         user.setUserName(claims.get("userName").asString());
-        user.setPassWord(claims.get("passWord").asString());
         user.setNickName(claims.get("nickName").asString());
         user.setPhone(claims.get("phone").asString());
         user.setEmail(claims.get("email").asString());
         user.setAvatar(claims.get("avatar").asString());
         user.setAddr(claims.get("addr").asString());
-
+        user.setCreateTime(claims.get("createTime").asString());
+        user.setUpdateTime(claims.get("updateTime").asString());
+        user.setUserRole(claims.get("userRole").asString());
+        user.setUserPermission(claims.get("userPermission").asString());
         return user;
 
     }

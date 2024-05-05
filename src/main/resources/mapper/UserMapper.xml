@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.liwanyu.project_server.mapper.UserMapper">
+
+    <select id="login" resultType="top.liwanyu.project_server.model.entity.UserEntity">
+        SELECT * FROM user WHERE `userName` = #{username};
+    </select>
+
+    <!-- register --> 
+
+    <insert id="register">
+        INSERT INTO user (userName, password, nickName, emails, phones, addr,
+                           avatar, createTime, updateTime, userRole, userPermission, pwsalt)
+        VALUES (#{username}, #{password}, #{nickName}, #{email}, #{phone}, #{addr},
+                #{avatar}, #{createTime}, #{updateTime}, #{userRole}, #{userPermission}, #{pwsalt});
+    </insert>
+
+    <!-- findUser --> 
+
+    <select id="findUser" resultType="java.lang.Integer">
+        SELECT count(*) FROM user WHERE `userName` = #{username};
+    </select></mapper>
