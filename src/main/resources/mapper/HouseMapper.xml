@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.liwanyu.project_server.mapper.HouseMapper">
+
+    <!-- addHouse -->
+
+    <insert id="addHouse" parameterType="top.liwanyu.project_server.model.query.HouseQuery">
+        INSERT INTO house (houseTardeType, houseTerritory, houseAddrCode, houseAddr, houseInfo, houseFile,
+                           housePrice, userId, houseState, createTime, updateTime)
+        VALUES (#{houseTardeType}, #{houseTerritory}, #{houseAddrCode}, #{houseAddr}, #{houseInfo}, #{houseFile},
+                #{housePrice}, #{userId}, #{houseState}, #{createTime}, #{updateTime});
+    </insert>
+
+    <!-- deleteHouse -->
+
+    <update id="deleteHouse">
+        UPDATE house SET houseState = 'user_off', updateTime = #{updateTime} WHERE id = #{id};
+    </update>
+
+    <!-- updateHouse -->
+
+    <update id="updateHouse" parameterType="top.liwanyu.project_server.model.query.HouseQuery">
+        UPDATE house
+        <set>
+            <if test="houseTardeType != null">, houseTardeType = #{houseTardeType}</if>
+            <if test="houseTerritory != null">, houseTerritory = #{houseTerritory}</if>
+            <if test="houseAddrCode != null">, houseAddrCode = #{houseAddrCode}</if>
+            <if test="houseAddr != null">, houseAddr = #{houseAddr}</if>
+            <if test="houseInfo != null">, houseInfo = #{houseInfo}</if>
+            <if test="houseFile != null">, houseFile = #{houseFile}</if>
+            <if test="housePrice != null">, housePrice = #{housePrice}</if>
+            <if test="houseState != null">, houseState = #{houseState}</if>
+            <if test="true">, updateTime = #{updateTime}</if>
+        </set>
+        WHERE id = #{id};
+    </update>
+
+    <!-- getHouse -->
+
+    <select id="getHouse" resultType="top.liwanyu.project_server.model.entity.HouseEntity">
+        SELECT * FROM house WHERE id = #{id};
+    </select>
+
+    <!-- getHouses -->
+
+    <select id="getHouses"  parameterType="top.liwanyu.project_server.model.query.HouseQuery"  resultType="top.liwanyu.project_server.model.entity.HouseEntity">
+        SELECT * FROM house
+        <where>
+            <if test="houseTardeType != null">AND houseTardeType = #{houseTardeType}</if>
+            <if test="houseTerritory != null">AND houseTerritory = #{houseTerritory}</if>
+            <if test="houseState != null">AND houseState LIKE concat('%', #{houseState}, '%')</if>
+            <if test="houseAddrCode != null">AND houseAddrCode LIKE concat(#{houseAddrCode}, '%')</if>
+            <if test="houseAddr != null">AND houseAddr LIKE concat('%', #{houseAddr}, '%')</if>
+            <if test="userId != null">AND userId = #{userId}</if>
+        </where>
+        ORDER BY createTime DESC LIMIT #{pageSize} OFFSET #{offset};
+    </select>
+
+    <!-- reviewHouse -->
+
+
+    <update id="reviewHouse">
+        UPDATE house SET houseState = #{houseState}, updateTime = #{updateTime} WHERE id = #{id};
+    </update>
+
+
+
+
+
+
+</mapper>

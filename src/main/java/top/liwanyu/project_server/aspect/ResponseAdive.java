@@ -37,7 +37,6 @@ public class ResponseAdive implements ResponseBodyAdvice<Object> {
             } catch (JsonProcessingException e) {
                 throw new GlobalException(ResultStatus.JSON_PARSE_ERROR);
             }
-
         }
         return Result.success(body);
     }

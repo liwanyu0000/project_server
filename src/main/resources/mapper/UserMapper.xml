@@ -3,22 +3,99 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.liwanyu.project_server.mapper.UserMapper">
+    <!-- login -->
 
     <select id="login" resultType="top.liwanyu.project_server.model.entity.UserEntity">
-        SELECT * FROM user WHERE `userName` = #{username};
+        SELECT * FROM house_transaction.user WHERE `userName` = #{username};
+    </select>
+
+    <!-- findUserById --> 
+
+    <select id="findUserById"  resultType="top.liwanyu.project_server.model.entity.UserEntity">
+        SELECT * FROM house_transaction.user WHERE `id` = #{id};
+    </select>
+
+    <!-- haveUser --> 
+
+    <select id="haveUser" resultType="java.lang.Integer">
+        SELECT count(*) FROM house_transaction.user WHERE `userName` = #{userName};
     </select>
 
     <!-- register --> 
 
-    <insert id="register">
-        INSERT INTO user (userName, password, nickName, emails, phones, addr,
-                           avatar, createTime, updateTime, userRole, userPermission, pwsalt)
-        VALUES (#{username}, #{password}, #{nickName}, #{email}, #{phone}, #{addr},
-                #{avatar}, #{createTime}, #{updateTime}, #{userRole}, #{userPermission}, #{pwsalt});
+    <insert id="register" parameterType="top.liwanyu.project_server.model.query.UserQuery">
+        INSERT INTO house_transaction.user (userName, password, nickName, emails, phones, addr,
+                           avatar, createTime, updateTime, userPermission, pwsalt, extraInfo, addrCode)
+        VALUES (#{userName}, #{password}, #{nickName}, #{emails}, #{phones}, #{addr},
+                #{avatar}, #{createTime}, #{updateTime}, #{userPermission}, #{pwsalt}, #{extraInfo}, #{addrCode});
     </insert>
 
     <!-- findUser --> 
 
-    <select id="findUser" resultType="java.lang.Integer">
-        SELECT count(*) FROM user WHERE `userName` = #{username};
-    </select></mapper>
+    <select id="findUser" parameterType="top.liwanyu.project_server.model.query.UserQuery" resultType="top.liwanyu.project_server.model.entity.UserEntity">
+        SELECT * FROM `user`
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="q != null">
+                and  (userName like concat('%', #{q}, '%') or nickName like concat('%', #{q}, '%')
+                or emails like concat('%', #{q}, '%') or phones like concat('%', #{q}, '%')
+                or addr like concat('%', #{q}, '%') or extraInfo like concat('%', #{q}, '%'))
+            </if>
+            <if test="userPermission != null">
+                and userPermission like concat('%', #{userPermission}, '%')
+            </if>
+            <if test="addrCode != null">
+                and addrCode = #{addrCode}
+            </if>
+        </where>
+    </select>
+
+
+    <!-- changePwd --> 
+
+    <update id="changePwd">
+        UPDATE house_transaction.user SET password = #{password}, updateTime = #{updateTime} WHERE id = #{id};
+    </update>
+
+
+    <!-- changeInfo --> 
+    <update id="changeInfo" parameterType="top.liwanyu.project_server.model.query.UserQuery">
+        UPDATE house_transaction.user
+        <set>
+            <if test="nickName != null">
+               , nickName = #{nickName}
+            </if>
+            <if test="emails != null">
+               , emails = #{emails}
+            </if>
+            <if test="phones != null">
+               , phones = #{phones}
+            </if>
+            <if test="addr != null">
+               , addr = #{addr}
+            </if>
+            <if test="avatar != null">
+               , avatar = #{avatar}
+            </if>
+            <if test="updateTime != null">
+               , updateTime = #{updateTime}
+            </if>
+            <if test="extraInfo != null">
+               , extraInfo = #{extraInfo}
+            </if>
+            <if test="addrCode != null">
+               , addrCode = #{addrCode}
+            </if>
+        </set>
+        WHERE id = #{id};
+    </update>
+
+
+    <!-- changePermission --> 
+
+    <update id="changePermission" parameterType="top.liwanyu.project_server.model.query.UserQuery">
+        UPDATE house_transaction.user SET userPermission = #{userPermission}, updateTime = #{updateTime} WHERE id = #{id};
+    </update>    
+    </mapper>

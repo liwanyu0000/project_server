@@ -9,6 +9,7 @@
 package top.liwanyu.project_server.model.entity;
 
 import lombok.Data;
+import top.liwanyu.project_server.constant.consist.User;
 
 @Data
 public class UserEntity {
@@ -17,25 +18,46 @@ public class UserEntity {
     // 用户名
     private String userName;
     // 密码
-    private String passWord;
+    private String password;
     // 昵称
     private String nickName;
     // 手机号
-    private String phone;
+    private String phones;
     // 邮箱
-    private String email;
+    private String emails;
     // 头像
     private String avatar;
+    // 地址码
+    private String addrCode;
     // 地址
     private String addr;
     // 创建时间
     private String createTime;
     // 更新时间
     private String updateTime;
-    // 角色
-    private String userRole;
     // 权限
-    private String userPermission;  
+    private String userPermission;
     // 盐
     private String pwsalt;
+    // 额外的信息
+    private String extraInfo;
+
+    public String getUserPermission(){
+        if (userPermission == null) {
+            return "";
+        }
+        return userPermission;
+    }
+
+    public boolean isAdministrator() {
+        return getUserPermission().contains(User.USER_PERMISSION_ADMIN);
+    }
+
+    public boolean canLogin() {
+        return getUserPermission().contains(User.USER_PERMISSION_LOGIN);
+    }
+
+    public boolean canPublish() {
+        return getUserPermission().contains(User.USER_PERMISSION_PUBLISH);
+    }
 }

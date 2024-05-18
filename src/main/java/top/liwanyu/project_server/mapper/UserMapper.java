@@ -1,12 +1,24 @@
 package top.liwanyu.project_server.mapper;
 
 import top.liwanyu.project_server.model.entity.UserEntity;
+import top.liwanyu.project_server.model.query.UserQuery;
+
+import java.util.List;
 
 public interface UserMapper {
     public UserEntity login(String username);
 
-    public Integer register(String username, String password, String nickName, String phone, String email, String avatar,
-            String addr, String userRole, String userPermission, String pwsalt, String createTime, String updateTime);
+    public UserEntity findUserById(int id);
 
-    public Integer findUser(String username);
+    public Integer haveUser(String userName);
+
+    public Integer register(UserQuery userQuery);
+
+    public List<UserEntity> findUser(UserQuery userQuery);
+
+    public Integer changePwd(Integer id, String password, String updateTime);
+
+    public Integer changeInfo(UserQuery userQuery);
+
+    public Integer changePermission(UserQuery userQuery);
 }
