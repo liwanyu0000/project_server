@@ -8,6 +8,5 @@ import lombok.EqualsAndHashCode;
 public class CommunicateParam extends BaseParam {
     private Integer userIdTwo;
     private String content;
-    private String creatTime;
 
 }

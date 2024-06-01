@@ -7,7 +7,7 @@
 
     <!-- creatCommunicate -->
 
-    <insert id="creatCommunicate" parameterType="top.liwanyu.project_server.model.query.CommunicateQuery">
+    <insert id="creatCommunicate" parameterType="top.liwanyu.project_server.model.query.CommunicateQuery" useGeneratedKeys="true">
         INSERT INTO communicate (userIdOne, userIdTwo, createTime, content) VALUES (#{userIdOne}, #{userIdTwo}, #{createTime}, #{content});
     </insert>
 
@@ -18,17 +18,22 @@
     </update>
 
     <!-- getCommunicate -->
-    <select id="getCommunicate" resultType="top.liwanyu.project_server.model.entity.CommunicateEntity">
-        SELECT * FROM communicate WHERE userIdOne = (#{userIdOne} AND userIdTwo = #{userIdTwo})
+    <select id="getCommunicate" resultType="top.liwanyu.project_server.model.entity.CommunicateEntity" parameterType="top.liwanyu.project_server.model.query.CommunicateQuery">
+        SELECT * FROM communicate WHERE (userIdOne = #{userIdOne} AND userIdTwo = #{userIdTwo})
                                      OR (userIdOne = #{userIdTwo} AND userIdTwo = #{userIdOne})
         ORDER BY createTime DESC LIMIT #{pageSize} OFFSET #{offset};
     </select>
 
     <!-- getCanAddCommunicate -->
-    <select id="getCanAddCommunicate" resultType="top.liwanyu.project_server.model.entity.CommunicateEntity">
-        SELECT * FROM communicate WHERE (userIdOne = (#{userIdOne} AND userIdTwo = #{userIdTwo})
+    <select id="getCanAddCommunicate" resultType="top.liwanyu.project_server.model.entity.CommunicateEntity" parameterType="top.liwanyu.project_server.model.query.CommunicateQuery">
+        SELECT * FROM communicate WHERE ((userIdOne = #{userIdOne} AND userIdTwo = #{userIdTwo})
                                      OR (userIdOne = #{userIdTwo} AND userIdTwo = #{userIdOne})) AND messageNum > 0;
     </select>
 
 
+    <!-- getCommunicateList --> 
+
+    <select id="getCommunicateList">
+        SELECT `userIdOne` as `tmpId` FROM communicate WHERE `userIdTwo` = #{userId} UNION SELECT `userIdTwo` as `tmpId` FROM communicate WHERE `userIdOne` = #{userId};
+    </select>
 </mapper>

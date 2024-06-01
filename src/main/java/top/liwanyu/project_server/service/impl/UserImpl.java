@@ -17,6 +17,7 @@ import top.liwanyu.project_server.model.dto.UserDto;
 import top.liwanyu.project_server.model.entity.UserEntity;
 import top.liwanyu.project_server.model.param.UserParam;
 import top.liwanyu.project_server.model.query.UserQuery;
+import top.liwanyu.project_server.service.intf.NotifyIntf;
 import top.liwanyu.project_server.service.intf.UserIntf;
 import top.liwanyu.project_server.utils.BeanCopyUtils;
 import top.liwanyu.project_server.utils.DateUtils;
@@ -32,6 +33,10 @@ public class UserImpl implements UserIntf {
     
     @Resource
     private TokenUtils tokenUtils;
+
+    
+    @Resource
+    private NotifyIntf notifyIntf;
 
     @Override
     public LoginUserDto login(UserParam userParam) {
@@ -164,6 +169,7 @@ public class UserImpl implements UserIntf {
         {
             throw new GlobalException(ResultStatus.USER_INFO_CHANGE_ERROR);
         }
+        notifyIntf.sendNotify(BeanCopyUtils.copyBean(userMapper.findUserById(userQuery.getId()), UserDto.class));
         return true;
     }
 
@@ -184,6 +190,7 @@ public class UserImpl implements UserIntf {
         if ( userMapper.changePermission(userQuery) < 1) {
             throw new GlobalException(ResultStatus.USER_PERMISSION_CHANGE_ERROR);
         }
+        notifyIntf.sendNotify(BeanCopyUtils.copyBean(userMapper.findUserById(userQuery.getId()), UserDto.class));
         return true;
     }
 

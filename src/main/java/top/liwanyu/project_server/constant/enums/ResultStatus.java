@@ -53,7 +53,11 @@ public enum ResultStatus implements IResultStatus {
     HOUSE_PRICE_NOT_NULL(10037, "价格不能为空"),
     HOUSE_ADDRCODE_NOT_NULL(10038, "房屋地址码不能为空"),
     HOUSE_ADDR_NOT_NULL(10039, "房屋详细地址不能为空"),
-    
+    COMMUNICATE_CONTENT_NOT_NULL(10040, "通讯内容不能为空"),
+    COMMUNICATE_USERID_TWO_NOT_NULL(10041, "通讯对象不能为空"),
+    PAGE_NUM_NOT_NULL(10042, "页码不能为空"),
+    COMMUNICATE_USERID_TWO_NOT_SELF(10043, "无法与自己通讯"),
+    COMMUNICATE_NOT_EXIST(10044, "通讯不存在"),
     ;
 
     // 状态码

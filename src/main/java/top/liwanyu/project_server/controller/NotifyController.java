@@ -7,13 +7,13 @@ import io.netty.util.internal.StringUtil;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import top.liwanyu.project_server.model.dto.NotifyDto;
-import top.liwanyu.project_server.model.param.MessageParam;
+// import top.liwanyu.project_server.model.param.MessageParam;
 import top.liwanyu.project_server.service.intf.NotifyIntf;
 import top.liwanyu.project_server.utils.TokenUtils;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+// import org.springframework.web.bind.annotation.PostMapping;
+// import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -30,14 +30,14 @@ public class NotifyController {
     private TokenUtils tokenUtils;
 
 
-    @PostMapping("/send")
-    public boolean send(@RequestBody MessageParam messageParam, HttpServletRequest request) {
-        if (messageParam.getTo() == null) {
-            return notifyIntf.sendNotify(messageParam);
-        }
-        int userId = tokenUtils.getId(request.getHeader("token"));
-        return notifyIntf.sendNotify(messageParam, userId);
-    }
+    // @PostMapping("/send")
+    // public boolean send(@RequestBody MessageParam messageParam, HttpServletRequest request) {
+    //     if (messageParam.getTo() == null) {
+    //         return notifyIntf.sendNotify(messageParam);
+    //     }
+    //     int userId = tokenUtils.getId(request.getHeader("token"));
+    //     return notifyIntf.sendNotify(messageParam, userId);
+    // }
 
     @GetMapping("/create")
     public NotifyDto creat(HttpServletRequest request) {

@@ -35,8 +35,8 @@
     <select id="findUser" parameterType="top.liwanyu.project_server.model.query.UserQuery" resultType="top.liwanyu.project_server.model.entity.UserEntity">
         SELECT * FROM `user`
         <where>
-            <if test="id != null">
-                and id = #{id}
+            <if test="true">
+                and id != #{id}
             </if>
             <if test="q != null">
                 and  (userName like concat('%', #{q}, '%') or nickName like concat('%', #{q}, '%')

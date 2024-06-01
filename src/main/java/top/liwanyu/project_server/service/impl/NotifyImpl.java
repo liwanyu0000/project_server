@@ -15,8 +15,9 @@ import top.liwanyu.project_server.mapper.UserMapper;
 import top.liwanyu.project_server.model.dto.BaseUserDto;
 import top.liwanyu.project_server.model.dto.MessageDto;
 import top.liwanyu.project_server.model.dto.NotifyDto;
+import top.liwanyu.project_server.model.dto.HouseDto;
+import top.liwanyu.project_server.model.dto.UserDto;
 import top.liwanyu.project_server.model.entity.UserEntity;
-import top.liwanyu.project_server.model.param.MessageParam;
 import top.liwanyu.project_server.service.intf.NotifyIntf;
 import top.liwanyu.project_server.utils.BeanCopyUtils;
 import top.liwanyu.project_server.utils.DateUtils;
@@ -36,6 +37,7 @@ public class NotifyImpl implements NotifyIntf {
         if (messages == null) {
             messages = new HashSet<>();
         }
+        @SuppressWarnings("rawtypes")
         List<MessageDto> messageDtos = messages.stream()
                 .map(message -> BeanCopyUtils.copyBean(message, MessageDto.class)).toList();
         int num = (new Random()).nextInt(9999);
@@ -62,37 +64,56 @@ public class NotifyImpl implements NotifyIntf {
     }
 
     @Override
-    public Boolean sendNotify(MessageParam messageParam, Integer from) {
+    public Boolean sendNotify(String data, Integer to, Integer from) {
         UserEntity userEntity = userMapper.findUserById(from);
-        MessageDto messageDto = BeanCopyUtils.copyBean(messageParam, MessageDto.class);
+        MessageDto<String> messageDto = new MessageDto<String>();
+        messageDto.setType(MessageDto.MESSAGE_TYPE);
         messageDto.setFrom(BeanCopyUtils.copyBean(userEntity, BaseUserDto.class));
         messageDto.setTime(DateUtils.getNowDate());
+        messageDto.setTo(to);
+        messageDto.setData(data);
         Set<Object> channels = redisTemplate.opsForSet().members(NotifyConfig.CHANNELSET);
         boolean findUser = false;
         if (channels != null) {
             for (Object channel : channels) {
                 Integer id = NotifyConfig.getId(channel.toString());
-                if (id != null && id.equals(messageDto.getTo())) {
+                if (id != null && id.equals(to)) {
                     redisTemplate.convertAndSend(channel.toString(), messageDto);
                     findUser = true;
                 }
             }
         }
         if (!findUser) {
-            redisTemplate.opsForSet().add(NotifyConfig.MESSAGEPREFIX + messageDto.getTo(), messageDto);
+            redisTemplate.opsForSet().add(NotifyConfig.MESSAGEPREFIX + to, messageDto);
         }
         return true;
     }
 
     @Override
-    public Boolean sendNotify(MessageParam messageParam) {
+    public Boolean sendNotify(UserDto userDto) {
         Set<Object> channels = redisTemplate.opsForSet().members(NotifyConfig.CHANNELSET);
         if (channels == null)
             return true;
+        MessageDto<UserDto> message = new MessageDto<UserDto>();
+        message.setTime(DateUtils.getNowDate());
+        message.setData(userDto);
+        message.setType(MessageDto.NOTICE_USER_TYPE);
         for (Object channel : channels) {
-            MessageDto message = BeanCopyUtils.copyBean(messageParam, MessageDto.class);
-            message.setTime(DateUtils.getNowDate());
-            message.setTo(NotifyConfig.getId(channel.toString()));
+            redisTemplate.convertAndSend(channel.toString(), message);
+        }
+        return true;
+    }
+
+    @Override
+    public Boolean sendNotify(HouseDto houseDto) {
+        Set<Object> channels = redisTemplate.opsForSet().members(NotifyConfig.CHANNELSET);
+        if (channels == null)
+            return true;
+        MessageDto<HouseDto> message = new MessageDto<HouseDto>();
+        message.setTime(DateUtils.getNowDate());
+        message.setData(houseDto);
+        message.setType(MessageDto.NOTICE_HOUSE_TYPE);
+        for (Object channel : channels) {
             redisTemplate.convertAndSend(channel.toString(), message);
         }
         return true;

@@ -73,9 +73,8 @@ public class VerifyImpl implements VerifyIntf {
             redisTemplate.delete(verifyCode);
             throw new GlobalException(ResultStatus.VERIFY_CODE_EXPIRED);
         }
-        // TODO 注意这里的验证码校验（测试时注释掉了）
-        // if (!code.equalsIgnoreCase(serverCode))
-        //     throw new GlobalException(ResultStatus.VERIFY_CODE_ERROR);
+        if (!code.equalsIgnoreCase(serverCode))
+            throw new GlobalException(ResultStatus.VERIFY_CODE_ERROR);
         redisTemplate.delete(verifyCode);
     }
 

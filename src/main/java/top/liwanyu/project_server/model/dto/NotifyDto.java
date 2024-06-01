@@ -25,5 +25,6 @@ public class NotifyDto {
     // 密码
     private String pwd;
     // data
+    @SuppressWarnings("rawtypes")
     private List<MessageDto> data;
 }

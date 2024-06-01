@@ -16,6 +16,7 @@ import top.liwanyu.project_server.model.entity.UserEntity;
 import top.liwanyu.project_server.model.param.HouseParam;
 import top.liwanyu.project_server.model.query.HouseQuery;
 import top.liwanyu.project_server.service.intf.HouseIntf;
+import top.liwanyu.project_server.service.intf.NotifyIntf;
 import top.liwanyu.project_server.utils.BeanCopyUtils;
 import top.liwanyu.project_server.utils.DateUtils;
 
@@ -30,6 +31,9 @@ public class HouseImpl implements HouseIntf {
 
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private NotifyIntf notifyIntf;
 
     @Override
     public Integer addHouse(HouseParam houseParam) {
@@ -73,7 +77,10 @@ public class HouseImpl implements HouseIntf {
         if (HouseEntity.getUserId() != userId) {
             throw new GlobalException(ResultStatus.NOT_UPDATE_OTHER_HOUSE);
         }
-        return houseMapper.deleteHouse(id, DateUtils.getNowDate());
+        Integer ans = houseMapper.deleteHouse(id, DateUtils.getNowDate());
+        // send notify
+        notifyIntf.sendNotify(fromEntity(houseMapper.getHouse(id)));
+        return ans;
     }
 
     @Override
@@ -90,11 +97,14 @@ public class HouseImpl implements HouseIntf {
             throw new GlobalException(ResultStatus.NOT_UPDATE_OTHER_HOUSE);
         }
         houseParam.setUserId(null);
-        HouseQuery HouseQuery = BeanCopyUtils.copyBean(houseParam, HouseQuery.class);
-        HouseQuery.setId(id);
-        HouseQuery.setHouseState(Houes.HOUSE_STATUS_AUDIT);
-        HouseQuery.setUpdateTime(DateUtils.getNowDate());
-        return houseMapper.updateHouse(HouseQuery);
+        HouseQuery houseQuery = BeanCopyUtils.copyBean(houseParam, HouseQuery.class);
+        houseQuery.setId(id);
+        houseQuery.setHouseState(Houes.HOUSE_STATUS_AUDIT);
+        houseQuery.setUpdateTime(DateUtils.getNowDate());
+        Integer ans = houseMapper.updateHouse(houseQuery);
+        // send notify
+        notifyIntf.sendNotify(fromEntity(houseMapper.getHouse(id)));
+        return ans;
     }
 
     @Override
@@ -106,7 +116,10 @@ public class HouseImpl implements HouseIntf {
         houseQuery.setId(id);
         houseQuery.setHouseState(state);
         houseQuery.setUpdateTime(DateUtils.getNowDate());
-        return houseMapper.updateHouse(houseQuery);
+        Integer ans = houseMapper.updateHouse(houseQuery);
+        // send notify
+        notifyIntf.sendNotify(fromEntity(houseMapper.getHouse(id)));
+        return ans;
     }
 
 
@@ -156,7 +169,10 @@ public class HouseImpl implements HouseIntf {
         if (canPass == null) {
             throw new GlobalException(ResultStatus.REQUEST_PARAM_ERROR);
         }
-        return houseMapper.reviewHouse(id, canPass ? Houes.HOUSE_STATUS_PUBLISH : Houes.HOUSE_STATUS_NOT_PASS, DateUtils.getNowDate());
+        Integer ans =houseMapper.reviewHouse(id, canPass ? Houes.HOUSE_STATUS_PUBLISH : Houes.HOUSE_STATUS_NOT_PASS, DateUtils.getNowDate());
+        // send notify
+        notifyIntf.sendNotify(fromEntity(houseMapper.getHouse(id)));
+        return ans;
     }
 
 }

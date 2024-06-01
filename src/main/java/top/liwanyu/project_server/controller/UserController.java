@@ -77,7 +77,7 @@ public class UserController {
         return userIntf.changeInfo(userParam);
     }
 
-    // 获取用户权限
+    // 修改用户权限
     @PostMapping("/changePermission")
     public boolean changePermission(@RequestBody UserParam userParam, HttpServletRequest request) {
         int userId =  tokenUtils.verifyAdmin( request.getHeader("token"));
@@ -93,7 +93,8 @@ public class UserController {
     // 获取用户信息
     @PostMapping("/filterUsers")
     public List<UserDto> filterUsers(@RequestBody UserParam userParam, HttpServletRequest request) {
-        tokenUtils.verifyAdmin( request.getHeader("token"));
+        int id = tokenUtils.verifyAdmin( request.getHeader("token"));
+        userParam.setId(id);
         return userIntf.filterUsers(userParam);
     }
 
